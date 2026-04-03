@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PeretsJack - בלאק ג'ק</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="game-container">
+        <header>
+            <h1>🎰 PeretsJack 🎰</h1>
+            <div class="balance-display">
+                <span>יתרה: </span>
+                <span id="balance">100,000</span>
+                <span> ₪</span>
+            </div>
+        </header>
+
+        <!-- Dealer Area -->
+        <div class="dealer-area">
+            <h2>הדילר <span id="dealer-score"></span></h2>
+            <div id="dealer-cards" class="cards-container"></div>
+        </div>
+
+        <!-- Game Result -->
+        <div id="game-result" class="game-result hidden"></div>
+
+        <!-- Strategy Tip -->
+        <div id="strategy-tip" class="strategy-tip hidden">
+            <div class="tip-header">💡 טיפ אסטרטגי:</div>
+            <div id="tip-content"></div>
+        </div>
+
+        <!-- Player Area -->
+        <div class="player-area">
+            <h2>השחקן <span id="player-score"></span></h2>
+            <div id="player-hands-container">
+                <div id="player-cards" class="cards-container"></div>
+            </div>
+        </div>
+
+        <!-- Betting Area -->
+        <div id="betting-area" class="betting-area">
+            <h3>הימור נוכחי: <span id="current-bet">0</span> ₪</h3>
+            <div class="chips-container">
+                <button class="chip chip-1k" data-value="1000">1K</button>
+                <button class="chip chip-2k" data-value="2000">2K</button>
+                <button class="chip chip-5k" data-value="5000">5K</button>
+                <button class="chip chip-10k" data-value="10000">10K</button>
+            </div>
+            <div class="betting-buttons">
+                <button id="clear-bet" class="btn btn-secondary">נקה הימור</button>
+                <button id="deal-btn" class="btn btn-primary">חלק קלפים</button>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div id="action-buttons" class="action-buttons hidden">
+            <button id="hit-btn" class="btn btn-action">Hit - קלף נוסף</button>
+            <button id="stand-btn" class="btn btn-action">Stand - עמוד</button>
+            <button id="double-btn" class="btn btn-action">Double - הכפל</button>
+            <button id="split-btn" class="btn btn-action" disabled>Split - פצל</button>
+            <button id="insurance-btn" class="btn btn-action" disabled>Insurance - ביטוח</button>
+        </div>
+
+        <!-- New Game Button -->
+        <div id="new-game-area" class="new-game-area hidden">
+            <button id="new-game-btn" class="btn btn-primary">משחק חדש</button>
+        </div>
+
+        <!-- Add Money Modal -->
+        <div id="add-money-modal" class="modal hidden">
+            <div class="modal-content">
+                <h2>😔 נגמר לך הכסף!</h2>
+                <p>כמה תרצה להוסיף?</p>
+                <div class="add-money-buttons">
+                    <button class="btn btn-money" data-amount="50000">50,000 ₪</button>
+                    <button class="btn btn-money" data-amount="100000">100,000 ₪</button>
+                    <button class="btn btn-money" data-amount="200000">200,000 ₪</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
