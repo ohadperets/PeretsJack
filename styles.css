@@ -30,9 +30,9 @@ body::before {
 }
 
 .game-container {
-    max-width: 1000px;
+    max-width: 900px;
     margin: 0 auto;
-    padding: 15px;
+    padding: 8px;
     position: relative;
     z-index: 1;
 }
@@ -40,40 +40,40 @@ body::before {
 /* Header */
 header {
     text-align: center;
-    padding: 15px 20px;
+    padding: 8px 15px;
     background: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 100%);
-    border-radius: 20px;
-    margin-bottom: 15px;
+    border-radius: 15px;
+    margin-bottom: 8px;
     border: 2px solid rgba(255, 215, 0, 0.3);
     box-shadow: 0 10px 40px rgba(0,0,0,0.3);
 }
 
 header h1 {
     font-family: 'Playfair Display', serif;
-    font-size: 2.8rem;
+    font-size: 1.8rem;
     background: linear-gradient(180deg, #ffd700 0%, #ff8c00 50%, #ffd700 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     text-shadow: none;
     filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
-    margin-bottom: 8px;
-    letter-spacing: 3px;
+    margin-bottom: 4px;
+    letter-spacing: 2px;
 }
 
 .balance-display {
-    font-size: 1.4rem;
+    font-size: 1rem;
     color: #fff;
     font-weight: 400;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 6px;
 }
 
 .balance-display #balance {
     font-weight: 700;
-    font-size: 1.6rem;
+    font-size: 1.2rem;
     color: #4ade80;
     text-shadow: 0 0 20px rgba(74, 222, 128, 0.5);
 }
@@ -81,11 +81,11 @@ header h1 {
 /* Table Areas */
 .dealer-area, .player-area {
     background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.05) 100%);
-    border-radius: 100px;
-    padding: 25px 40px;
-    margin: 12px 0;
-    min-height: 200px;
-    border: 3px solid rgba(255,255,255,0.1);
+    border-radius: 60px;
+    padding: 10px 20px;
+    margin: 6px 0;
+    min-height: 120px;
+    border: 2px solid rgba(255,255,255,0.1);
     box-shadow: 
         inset 0 2px 10px rgba(0,0,0,0.2),
         0 0 30px rgba(0,0,0,0.2);
@@ -127,8 +127,8 @@ header h1 {
     left: 50%;
     transform: translate(-50%, -50%);
     background: rgba(0, 0, 0, 0.85);
-    padding: 15px 30px;
-    border-radius: 15px;
+    padding: 8px 16px;
+    border-radius: 10px;
     text-align: center;
     z-index: 20;
     animation: popIn 0.4s ease;
@@ -141,13 +141,13 @@ header h1 {
 }
 
 .result-overlay .result-text {
-    font-size: 1.5rem;
+    font-size: 1rem;
     font-weight: bold;
-    margin-bottom: 5px;
+    margin-bottom: 3px;
 }
 
 .result-overlay .result-amount {
-    font-size: 1.2rem;
+    font-size: 0.9rem;
 }
 
 .result-overlay.win .result-text {
@@ -198,35 +198,35 @@ header h1 {
 
 .dealer-area h2, .player-area h2 {
     text-align: center;
-    margin-bottom: 20px;
-    font-size: 1rem;
+    margin-bottom: 8px;
+    font-size: 0.8rem;
     font-weight: 400;
     text-transform: uppercase;
-    letter-spacing: 3px;
+    letter-spacing: 2px;
     color: rgba(255,255,255,0.7);
 }
 
 .cards-container {
     display: flex;
     justify-content: center;
-    min-height: 180px;
+    min-height: 100px;
     perspective: 1000px;
     align-items: center;
 }
 
 /* Playing Cards */
 .card {
-    width: 120px;
-    height: 168px;
-    border-radius: 10px;
+    width: 70px;
+    height: 98px;
+    border-radius: 6px;
     background: white;
     box-shadow: 
-        0 4px 8px rgba(0,0,0,0.3),
-        0 12px 24px rgba(0,0,0,0.25);
+        0 2px 4px rgba(0,0,0,0.3),
+        0 6px 12px rgba(0,0,0,0.25);
     position: relative;
     transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
     transform-style: preserve-3d;
-    margin-left: -35px;
+    margin-left: -20px;
     animation: dealCard 1.2s ease-out;
     overflow: hidden;
 }
@@ -319,21 +319,21 @@ header h1 {
 /* Strategy Tip */
 .strategy-tip {
     background: linear-gradient(135deg, #4f46e5, #7c3aed);
-    border-radius: 10px;
-    padding: 15px 20px;
-    margin: 15px 0;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin: 6px 0;
     animation: slideIn 0.3s ease;
 }
 
 .tip-header {
     font-weight: bold;
-    margin-bottom: 8px;
-    font-size: 1.1rem;
+    margin-bottom: 4px;
+    font-size: 0.85rem;
 }
 
 #tip-content {
-    font-size: 1rem;
-    line-height: 1.5;
+    font-size: 0.8rem;
+    line-height: 1.3;
 }
 
 @keyframes slideIn {
@@ -344,10 +344,10 @@ header h1 {
 /* Current Bet Display (during game) */
 .current-bet-display {
     background: rgba(0, 0, 0, 0.5);
-    border-radius: 10px;
-    padding: 10px 20px;
+    border-radius: 8px;
+    padding: 6px 12px;
     text-align: center;
-    margin: 10px auto;
+    margin: 5px auto;
     max-width: 300px;
 }
 
@@ -368,32 +368,32 @@ header h1 {
 .bet-chips-display {
     display: flex;
     justify-content: center;
-    gap: 8px;
-    margin: 10px 0;
-    min-height: 50px;
+    gap: 5px;
+    margin: 5px 0;
+    min-height: 35px;
     flex-wrap: wrap;
     align-items: center;
 }
 
 .bet-chip {
-    width: 50px;
-    height: 50px;
+    width: 35px;
+    height: 35px;
     border-radius: 50%;
-    border: 3px dashed white;
+    border: 2px dashed white;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: bold;
-    font-size: 0.9rem;
+    font-size: 0.7rem;
     cursor: pointer;
     transition: all 0.2s ease;
     animation: chipDrop 0.3s ease;
 }
 
 .bet-chip.small {
-    width: 35px;
-    height: 35px;
-    font-size: 0.7rem;
+    width: 25px;
+    height: 25px;
+    font-size: 0.6rem;
     border-width: 2px;
     cursor: default;
 }
@@ -429,47 +429,47 @@ header h1 {
 }
 
 .bet-hint {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     color: rgba(255, 255, 255, 0.5);
-    margin: 5px 0 15px;
+    margin: 3px 0 8px;
 }
 
 /* Betting Area */
 .betting-area {
     background: rgba(0, 0, 0, 0.3);
-    border-radius: 15px;
-    padding: 20px;
+    border-radius: 10px;
+    padding: 10px;
     text-align: center;
 }
 
 .betting-area h3 {
-    margin-bottom: 15px;
-    font-size: 1.3rem;
+    margin-bottom: 8px;
+    font-size: 1rem;
 }
 
 #current-bet {
     color: #ffd700;
-    font-size: 1.5rem;
+    font-size: 1.1rem;
 }
 
 .chips-container {
     display: flex;
     justify-content: center;
-    gap: 15px;
-    margin-bottom: 20px;
+    gap: 8px;
+    margin-bottom: 10px;
     flex-wrap: wrap;
 }
 
 .chip {
-    width: 70px;
-    height: 70px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
-    border: 4px dashed white;
+    border: 3px dashed white;
     font-weight: bold;
-    font-size: 1.1rem;
+    font-size: 0.85rem;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .chip:hover {
@@ -504,16 +504,16 @@ header h1 {
 .betting-buttons {
     display: flex;
     justify-content: center;
-    gap: 15px;
+    gap: 8px;
 }
 
 /* Buttons */
 .btn {
-    padding: 12px 30px;
-    font-size: 1.1rem;
+    padding: 8px 16px;
+    font-size: 0.9rem;
     font-weight: bold;
     border: none;
-    border-radius: 8px;
+    border-radius: 6px;
     cursor: pointer;
     transition: all 0.2s ease;
 }
@@ -542,31 +542,33 @@ header h1 {
     background: linear-gradient(135deg, #3b82f6, #2563eb);
     color: white;
     flex: 1;
-    max-width: 200px;
+    max-width: 120px;
+    padding: 8px 10px;
+    font-size: 0.8rem;
 }
 
 .btn-money {
     background: linear-gradient(135deg, #22c55e, #16a34a);
     color: white;
-    margin: 5px;
+    margin: 3px;
 }
 
 /* Action Buttons */
 .action-buttons {
     display: flex;
     justify-content: center;
-    gap: 10px;
+    gap: 6px;
     flex-wrap: wrap;
-    padding: 20px;
+    padding: 8px;
     background: rgba(0, 0, 0, 0.2);
-    border-radius: 15px;
-    margin: 15px 0;
+    border-radius: 10px;
+    margin: 6px 0;
 }
 
 /* New Game Area */
 .new-game-area {
     text-align: center;
-    padding: 20px;
+    padding: 8px;
 }
 
 /* Modal */
@@ -643,19 +645,19 @@ header h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 15px;
-    margin: 15px auto;
-    padding: 10px 25px;
+    gap: 10px;
+    margin: 6px auto;
+    padding: 6px 15px;
     background: rgba(0, 0, 0, 0.6);
-    border-radius: 25px;
-    max-width: 300px;
+    border-radius: 20px;
+    max-width: 250px;
 }
 
 .timer-bar {
-    width: 200px;
-    height: 12px;
+    width: 150px;
+    height: 8px;
     background: rgba(255, 255, 255, 0.2);
-    border-radius: 6px;
+    border-radius: 4px;
     overflow: hidden;
 }
 
@@ -682,10 +684,10 @@ header h1 {
 }
 
 #timer-text {
-    font-size: 1.5rem;
+    font-size: 1.1rem;
     font-weight: bold;
     color: #fff;
-    min-width: 30px;
+    min-width: 25px;
     text-align: center;
 }
 
@@ -697,10 +699,10 @@ header h1 {
 /* Footer */
 .game-footer {
     text-align: center;
-    padding: 20px;
-    margin-top: 30px;
+    padding: 8px;
+    margin-top: 10px;
     color: rgba(255, 255, 255, 0.5);
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     letter-spacing: 1px;
 }
 
