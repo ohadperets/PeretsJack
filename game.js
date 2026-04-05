@@ -1,6 +1,16 @@
 // PeretsJack - Blackjack Game
 // Complete game logic with strategy tips
 
+// Hide splash screen after 2 seconds
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        const splash = document.getElementById('splash-screen');
+        if (splash) {
+            splash.classList.add('hidden');
+        }
+    }, 2000);
+});
+
 class BlackjackGame {
     constructor() {
         this.balance = 100000;
