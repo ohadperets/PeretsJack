@@ -21,6 +21,7 @@
         <div class="dealer-area">
             <h2>הדילר <span id="dealer-score"></span></h2>
             <div id="dealer-cards" class="cards-container"></div>
+            <div id="dealer-result-overlay" class="result-overlay hidden"></div>
         </div>
 
         <!-- Game Result -->
@@ -38,11 +39,22 @@
             <div id="player-hands-container">
                 <div id="player-cards" class="cards-container"></div>
             </div>
+            <div id="player-result-overlay" class="result-overlay hidden"></div>
+        </div>
+
+        <!-- Current Bet Display (visible during game) -->
+        <div id="current-bet-display" class="current-bet-display hidden">
+            <span>הימור: <span id="game-bet-amount">0</span> ₪</span>
+            <div id="game-bet-chips" class="game-bet-chips"></div>
         </div>
 
         <!-- Betting Area -->
         <div id="betting-area" class="betting-area">
             <h3>הימור נוכחי: <span id="current-bet">0</span> ₪</h3>
+            <div id="bet-chips-display" class="bet-chips-display">
+                <!-- Bet chips will appear here -->
+            </div>
+            <p class="bet-hint">(לחץ על אסימון להסיר)</p>
             <div class="chips-container">
                 <button class="chip chip-1k" data-value="1000">1K</button>
                 <button class="chip chip-2k" data-value="2000">2K</button>
@@ -50,18 +62,27 @@
                 <button class="chip chip-10k" data-value="10000">10K</button>
             </div>
             <div class="betting-buttons">
+                <button id="repeat-bet" class="btn btn-secondary">חזור על הימור</button>
                 <button id="clear-bet" class="btn btn-secondary">נקה הימור</button>
                 <button id="deal-btn" class="btn btn-primary">חלק קלפים</button>
             </div>
         </div>
 
+        <!-- Decision Timer -->
+        <div id="decision-timer" class="decision-timer hidden">
+            <div class="timer-bar">
+                <div id="timer-progress" class="timer-progress"></div>
+            </div>
+            <span id="timer-text">15</span>
+        </div>
+
         <!-- Action Buttons -->
         <div id="action-buttons" class="action-buttons hidden">
-            <button id="hit-btn" class="btn btn-action">Hit - קלף נוסף</button>
-            <button id="stand-btn" class="btn btn-action">Stand - עמוד</button>
-            <button id="double-btn" class="btn btn-action">Double - הכפל</button>
-            <button id="split-btn" class="btn btn-action" disabled>Split - פצל</button>
-            <button id="insurance-btn" class="btn btn-action" disabled>Insurance - ביטוח</button>
+            <button id="hit-btn" class="btn btn-action">Hit</button>
+            <button id="stand-btn" class="btn btn-action">Stand</button>
+            <button id="double-btn" class="btn btn-action">Double</button>
+            <button id="split-btn" class="btn btn-action" disabled>Split</button>
+            <button id="insurance-btn" class="btn btn-action" disabled>Insurance</button>
         </div>
 
         <!-- New Game Button -->

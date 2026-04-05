@@ -5,6 +5,8 @@ class BlackjackGame {
     constructor() {
         this.balance = 100000;
         this.currentBet = 0;
+        this.betChips = []; // Track individual bet chips
+        this.lastBetChips = []; // Remember last bet for repeat
         this.deck = [];
         this.playerHands = [[]]; // Support for split hands
         this.dealerHand = [];
@@ -13,6 +15,11 @@ class BlackjackGame {
         this.insuranceBet = 0;
         this.handsDoubled = [false];
         this.handBets = [0];
+        
+        // Decision timer
+        this.decisionTimer = null;
+        this.timerSeconds = 10;
+        this.timerInterval = null;
         
         this.initializeElements();
         this.attachEventListeners();
@@ -52,9 +59,25 @@ class BlackjackGame {
         this.strategyTipEl = document.getElementById('strategy-tip');
         this.tipContentEl = document.getElementById('tip-content');
         
+        // Result overlays
+        this.dealerResultOverlay = document.getElementById('dealer-result-overlay');
+        this.playerResultOverlay = document.getElementById('player-result-overlay');
+        
         // New game
         this.newGameArea = document.getElementById('new-game-area');
         this.newGameBtn = document.getElementById('new-game-btn');
+        
+        // Timer
+        this.timerEl = document.getElementById('decision-timer');
+        this.timerProgressEl = document.getElementById('timer-progress');
+        this.timerTextEl = document.getElementById('timer-text');
+        
+        // Bet chips display
+        this.betChipsDisplayEl = document.getElementById('bet-chips-display');
+        this.currentBetDisplayEl = document.getElementById('current-bet-display');
+        this.gameBetAmountEl = document.getElementById('game-bet-amount');
+        this.gameBetChipsEl = document.getElementById('game-bet-chips');
+        this.repeatBetBtn = document.getElementById('repeat-bet');
         
         // Modal
         this.addMoneyModal = document.getElementById('add-money-modal');
@@ -70,6 +93,7 @@ class BlackjackGame {
         // Betting buttons
         this.clearBetBtn.addEventListener('click', () => this.clearBet());
         this.dealBtn.addEventListener('click', () => this.deal());
+        this.repeatBetBtn.addEventListener('click', () => this.repeatBet());
         
         // Action buttons
         this.hitBtn.addEventListener('click', () => this.hit());
@@ -179,13 +203,77 @@ class BlackjackGame {
             return;
         }
         this.currentBet += amount;
+        this.betChips.push(amount);
+        this.renderBetChips();
+        this.updateDisplay();
+    }
+
+    removeChip(index) {
+        if (this.gamePhase !== 'betting') return;
+        const amount = this.betChips[index];
+        this.currentBet -= amount;
+        this.betChips.splice(index, 1);
+        this.renderBetChips();
         this.updateDisplay();
     }
 
     clearBet() {
         if (this.gamePhase !== 'betting') return;
         this.currentBet = 0;
+        this.betChips = [];
+        this.renderBetChips();
         this.updateDisplay();
+    }
+
+    repeatBet() {
+        if (this.gamePhase !== 'betting') return;
+        if (this.lastBetChips.length === 0) return;
+        
+        const totalLastBet = this.lastBetChips.reduce((a, b) => a + b, 0);
+        if (totalLastBet > this.balance) {
+            alert('אין מספיק כסף להימור הקודם!');
+            return;
+        }
+        
+        this.betChips = [...this.lastBetChips];
+        this.currentBet = totalLastBet;
+        this.renderBetChips();
+        this.updateDisplay();
+    }
+
+    renderBetChips() {
+        const chipColors = {
+            1000: 'chip-1k',
+            2000: 'chip-2k',
+            5000: 'chip-5k',
+            10000: 'chip-10k'
+        };
+        const chipLabels = {
+            1000: '1K',
+            2000: '2K',
+            5000: '5K',
+            10000: '10K'
+        };
+        
+        // Render in betting area
+        this.betChipsDisplayEl.innerHTML = '';
+        this.betChips.forEach((amount, index) => {
+            const chip = document.createElement('div');
+            chip.className = `bet-chip ${chipColors[amount]}`;
+            chip.textContent = chipLabels[amount];
+            chip.addEventListener('click', () => this.removeChip(index));
+            this.betChipsDisplayEl.appendChild(chip);
+        });
+        
+        // Render in game display
+        this.gameBetChipsEl.innerHTML = '';
+        this.betChips.forEach((amount) => {
+            const chip = document.createElement('div');
+            chip.className = `bet-chip ${chipColors[amount]} small`;
+            chip.textContent = chipLabels[amount];
+            this.gameBetChipsEl.appendChild(chip);
+        });
+        this.gameBetAmountEl.textContent = this.currentBet.toLocaleString();
     }
 
     // Deal Cards
@@ -195,6 +283,12 @@ class BlackjackGame {
             alert('יש לבחור סכום הימור!');
             return;
         }
+        
+        // Save bet for repeat
+        this.lastBetChips = [...this.betChips];
+        
+        // Show bet display during game
+        this.currentBetDisplayEl.classList.remove('hidden');
         
         // Create deck if needed
         if (this.deck.length < 52) {
@@ -212,39 +306,63 @@ class BlackjackGame {
         // Deduct bet
         this.balance -= this.currentBet;
         
-        // Deal cards
-        this.playerHands[0].push(this.drawCard());
-        this.dealerHand.push(this.drawCard());
-        this.playerHands[0].push(this.drawCard());
-        this.dealerHand.push(this.drawCard());
-        
-        this.gamePhase = 'playing';
-        
+        this.gamePhase = 'dealing';
         this.updateDisplay();
-        this.renderCards();
+        this.bettingArea.classList.add('hidden');
         
-        // Check for insurance opportunity
-        if (this.dealerHand[0].value === 'A') {
-            this.insuranceBtn.disabled = false;
-        } else {
-            this.insuranceBtn.disabled = true;
-        }
+        // Deal cards one by one with delays
+        const cardDelay = 800; // ms between each card
         
-        // Check for blackjack
-        if (this.isBlackjack(this.playerHands[0])) {
-            this.gamePhase = 'dealerTurn';
-            this.dealerPlay();
-            return;
-        }
+        // Card 1: Player
+        setTimeout(() => {
+            this.playerHands[0].push(this.drawCard());
+            this.renderCards();
+        }, cardDelay);
         
-        // Check for split opportunity
-        this.updateActionButtons();
-        this.showStrategyTip();
+        // Card 2: Dealer
+        setTimeout(() => {
+            this.dealerHand.push(this.drawCard());
+            this.renderCards();
+        }, cardDelay * 2);
+        
+        // Card 3: Player
+        setTimeout(() => {
+            this.playerHands[0].push(this.drawCard());
+            this.renderCards();
+        }, cardDelay * 3);
+        
+        // Card 4: Dealer (hidden)
+        setTimeout(() => {
+            this.dealerHand.push(this.drawCard());
+            this.renderCards();
+            
+            this.gamePhase = 'playing';
+            
+            // Check for insurance opportunity
+            if (this.dealerHand[0].value === 'A') {
+                this.insuranceBtn.disabled = false;
+            } else {
+                this.insuranceBtn.disabled = true;
+            }
+            
+            // Check for blackjack
+            if (this.isBlackjack(this.playerHands[0])) {
+                this.gamePhase = 'dealerTurn';
+                this.dealerPlay();
+                return;
+            }
+            
+            // Check for split opportunity
+            this.updateActionButtons();
+            this.showStrategyTip();
+            this.startTimer();
+        }, cardDelay * 4);
     }
 
     // Player Actions
     hit() {
         if (this.gamePhase !== 'playing') return;
+        this.stopTimer();
         
         const hand = this.playerHands[this.currentHandIndex];
         hand.push(this.drawCard());
@@ -261,16 +379,19 @@ class BlackjackGame {
         } else {
             this.updateActionButtons();
             this.showStrategyTip();
+            this.startTimer();
         }
     }
 
     stand() {
         if (this.gamePhase !== 'playing') return;
+        this.stopTimer();
         this.nextHandOrDealerTurn();
     }
 
     double() {
         if (this.gamePhase !== 'playing') return;
+        this.stopTimer();
         
         const hand = this.playerHands[this.currentHandIndex];
         if (hand.length !== 2) return;
@@ -291,6 +412,7 @@ class BlackjackGame {
 
     split() {
         if (this.gamePhase !== 'playing') return;
+        this.stopTimer();
         
         const hand = this.playerHands[this.currentHandIndex];
         if (!this.isPair(hand)) return;
@@ -313,6 +435,7 @@ class BlackjackGame {
         this.updateDisplay();
         this.updateActionButtons();
         this.showStrategyTip();
+        this.startTimer();
     }
 
     insurance() {
@@ -335,7 +458,9 @@ class BlackjackGame {
             this.renderCards();
             this.updateActionButtons();
             this.showStrategyTip();
+            this.startTimer();
         } else {
+            this.stopTimer();
             this.gamePhase = 'dealerTurn';
             this.dealerPlay();
         }
@@ -346,25 +471,27 @@ class BlackjackGame {
         this.strategyTipEl.classList.add('hidden');
         this.actionButtons.classList.add('hidden');
         
-        // Reveal dealer's card
-        this.renderCards(true);
-        
-        // Check all hands for bust
-        let allBusted = true;
-        for (let hand of this.playerHands) {
-            if (this.calculateHandValue(hand) <= 21) {
-                allBusted = false;
-                break;
+        // Reveal dealer's card with delay
+        setTimeout(() => {
+            this.renderCards(true);
+            
+            // Check all hands for bust
+            let allBusted = true;
+            for (let hand of this.playerHands) {
+                if (this.calculateHandValue(hand) <= 21) {
+                    allBusted = false;
+                    break;
+                }
             }
-        }
-        
-        if (allBusted) {
-            this.endGame();
-            return;
-        }
-        
-        // Dealer draws cards
-        this.dealerDrawWithDelay();
+            
+            if (allBusted) {
+                setTimeout(() => this.endGame(), 1500);
+                return;
+            }
+            
+            // Dealer draws cards with delay
+            setTimeout(() => this.dealerDrawWithDelay(), 2000);
+        }, 1500);
     }
 
     dealerDrawWithDelay() {
@@ -373,13 +500,13 @@ class BlackjackGame {
         // Dealer hits on 16 or less, stands on 17+
         // Using soft 17 rule: dealer stands on soft 17
         if (dealerValue < 17 || (dealerValue === 17 && this.isSoftHand(this.dealerHand) && dealerValue < 17)) {
+            this.dealerHand.push(this.drawCard());
+            this.renderCards(true);
             setTimeout(() => {
-                this.dealerHand.push(this.drawCard());
-                this.renderCards(true);
                 this.dealerDrawWithDelay();
-            }, 700);
+            }, 2000);
         } else {
-            this.endGame();
+            setTimeout(() => this.endGame(), 1500);
         }
     }
 
@@ -446,19 +573,89 @@ class BlackjackGame {
         
         this.balance += totalWinnings;
         
-        // Display result
-        let resultClass = 'lose';
+        // Highlight winner area and show result overlays
         const totalBet = this.handBets.reduce((a, b) => a + b, 0);
+        const netResult = totalWinnings - totalBet;
+        
+        // Remove any previous highlights
+        document.querySelector('.dealer-area').classList.remove('winner', 'loser', 'push-result');
+        document.querySelector('.player-area').classList.remove('winner', 'loser', 'push-result');
+        this.playerResultOverlay.classList.remove('win', 'lose', 'push', 'blackjack');
+        this.dealerResultOverlay.classList.remove('win', 'lose', 'push', 'blackjack');
+        
+        // Determine result and show overlays
+        let playerOverlayClass = '';
+        let playerText = '';
+        let playerAmount = '';
+        let dealerText = '';
+        
+        const isBlackjackWin = results.some(r => r.includes("בלאק ג'ק!"));
         
         if (totalWinnings > totalBet) {
-            resultClass = results.some(r => r.includes('בלאק ג\'ק')) ? 'blackjack' : 'win';
+            // Player wins
+            document.querySelector('.player-area').classList.add('winner');
+            document.querySelector('.dealer-area').classList.add('loser');
+            
+            if (isBlackjackWin) {
+                playerOverlayClass = 'blackjack';
+                playerText = '🎉 בלאק ג\'ק!';
+            } else if (dealerBusted) {
+                playerOverlayClass = 'win';
+                playerText = '🔥 דילר נשרף!';
+                dealerText = 'נשרפתי!';
+            } else {
+                playerOverlayClass = 'win';
+                playerText = '🏆 ניצחת!';
+                dealerText = 'הפסדתי';
+            }
+            playerAmount = '+' + netResult.toLocaleString() + ' ₪';
+            
         } else if (totalWinnings === totalBet) {
-            resultClass = 'push';
+            // Push
+            document.querySelector('.player-area').classList.add('push-result');
+            document.querySelector('.dealer-area').classList.add('push-result');
+            playerOverlayClass = 'push';
+            playerText = '🤝 תיקו';
+            playerAmount = 'הימור חזר';
+            dealerText = 'תיקו';
+            
+        } else {
+            // Dealer wins
+            document.querySelector('.dealer-area').classList.add('winner');
+            document.querySelector('.player-area').classList.add('loser');
+            
+            const playerBusted = this.playerHands.some(hand => this.calculateHandValue(hand) > 21);
+            
+            if (playerBusted) {
+                playerOverlayClass = 'lose';
+                playerText = '💥 נשרפת!';
+                dealerText = '😎 ניצחתי!';
+            } else if (dealerBlackjack) {
+                playerOverlayClass = 'lose';
+                playerText = 'בלאק ג\'ק לדילר';
+                dealerText = '🃏 בלאק ג\'ק!';
+            } else {
+                playerOverlayClass = 'lose';
+                playerText = '😔 הפסדת';
+                dealerText = '😎 ניצחתי!';
+            }
+            playerAmount = netResult.toLocaleString() + ' ₪';
         }
         
-        this.gameResultEl.className = 'game-result ' + resultClass;
-        this.gameResultEl.innerHTML = results.join('<br>');
-        this.gameResultEl.classList.remove('hidden');
+        // Show player overlay
+        this.playerResultOverlay.classList.add(playerOverlayClass);
+        this.playerResultOverlay.innerHTML = `
+            <div class="result-text">${playerText}</div>
+            <div class="result-amount">${playerAmount}</div>
+        `;
+        this.playerResultOverlay.classList.remove('hidden');
+        
+        // Show dealer overlay if there's text
+        if (dealerText) {
+            this.dealerResultOverlay.classList.add(playerOverlayClass === 'win' || playerOverlayClass === 'blackjack' ? 'lose' : 'win');
+            this.dealerResultOverlay.innerHTML = `<div class="result-text">${dealerText}</div>`;
+            this.dealerResultOverlay.classList.remove('hidden');
+        }
         
         this.renderCards(true);
         this.updateDisplay();
@@ -477,6 +674,7 @@ class BlackjackGame {
     }
 
     newGame() {
+        this.stopTimer();
         this.gamePhase = 'betting';
         this.currentBet = 0;
         this.playerHands = [[]];
@@ -490,6 +688,23 @@ class BlackjackGame {
         this.dealerCardsEl.innerHTML = '';
         this.playerHandsContainer.innerHTML = '<div id="player-cards" class="cards-container"></div>';
         this.playerCardsEl = document.getElementById('player-cards');
+        
+        // Clear winner/loser highlights
+        document.querySelector('.dealer-area').classList.remove('winner', 'loser', 'push-result');
+        document.querySelector('.player-area').classList.remove('winner', 'loser', 'push-result');
+        
+        // Clear result overlays
+        this.playerResultOverlay.classList.add('hidden');
+        this.playerResultOverlay.classList.remove('win', 'lose', 'push', 'blackjack');
+        this.playerResultOverlay.innerHTML = '';
+        this.dealerResultOverlay.classList.add('hidden');
+        this.dealerResultOverlay.classList.remove('win', 'lose', 'push', 'blackjack');
+        this.dealerResultOverlay.innerHTML = '';
+        
+        // Hide bet display
+        this.currentBetDisplayEl.classList.add('hidden');
+        this.betChips = [];
+        this.renderBetChips();
         
         this.gameResultEl.classList.add('hidden');
         this.strategyTipEl.classList.add('hidden');
@@ -509,6 +724,78 @@ class BlackjackGame {
         this.updateDisplay();
     }
 
+    // Decision Timer Methods
+    startTimer() {
+        this.stopTimer(); // Clear any existing timer
+        this.timerSeconds = 15;
+        this.timerEl.classList.remove('hidden');
+        this.updateTimerDisplay();
+        
+        this.timerInterval = setInterval(() => {
+            this.timerSeconds--;
+            this.updateTimerDisplay();
+            
+            // Warning beep at 5 seconds
+            if (this.timerSeconds === 5) {
+                this.playBeep(600, 150);
+            }
+            
+            if (this.timerSeconds <= 0) {
+                this.playBeep(400, 300); // Lower tone when time's up
+                this.stopTimer();
+                // Auto-stand when time runs out
+                if (this.gamePhase === 'playing') {
+                    this.stand();
+                }
+            }
+        }, 1000);
+    }
+
+    stopTimer() {
+        if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+            this.timerInterval = null;
+        }
+        this.timerEl.classList.add('hidden');
+    }
+
+    updateTimerDisplay() {
+        this.timerTextEl.textContent = this.timerSeconds;
+        const percentage = (this.timerSeconds / 15) * 100;
+        this.timerProgressEl.style.width = percentage + '%';
+        
+        // Update timer color based on time remaining
+        this.timerProgressEl.classList.remove('warning', 'danger');
+        if (this.timerSeconds <= 3) {
+            this.timerProgressEl.classList.add('danger');
+        } else if (this.timerSeconds <= 5) {
+            this.timerProgressEl.classList.add('warning');
+        }
+    }
+
+    // Play a beep sound using Web Audio API
+    playBeep(frequency = 520, duration = 200) {
+        try {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = frequency;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration / 1000);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration / 1000);
+        } catch (e) {
+            // Audio not supported
+        }
+    }
+
     // Update Action Buttons
     updateActionButtons() {
         const hand = this.playerHands[this.currentHandIndex];
@@ -522,17 +809,32 @@ class BlackjackGame {
         this.actionButtons.classList.remove('hidden');
     }
 
-    // Render Cards
+    // Render Cards - Incremental rendering to avoid flicker
     renderCards(showDealerHidden = false) {
-        // Render dealer cards
-        this.dealerCardsEl.innerHTML = '';
-        this.dealerHand.forEach((card, index) => {
-            if (index === 1 && !showDealerHidden && this.gamePhase !== 'ended') {
-                this.dealerCardsEl.innerHTML += this.createCardHTML(null, true);
-            } else {
-                this.dealerCardsEl.innerHTML += this.createCardHTML(card);
+        // Render dealer cards incrementally
+        const currentDealerCards = this.dealerCardsEl.children.length;
+        
+        // If we need to reveal hidden card, just update the second card
+        if (showDealerHidden && currentDealerCards === 2 && this.dealerHand.length >= 2) {
+            const hiddenCard = this.dealerCardsEl.children[1];
+            if (hiddenCard && hiddenCard.querySelector('img').alt === 'Card Back') {
+                const card = this.dealerHand[1];
+                const newCard = this.createCardElement(card);
+                hiddenCard.replaceWith(newCard);
             }
-        });
+        }
+        
+        // Add new dealer cards only
+        for (let i = currentDealerCards; i < this.dealerHand.length; i++) {
+            const card = this.dealerHand[i];
+            let newCard;
+            if (i === 1 && !showDealerHidden && this.gamePhase !== 'ended') {
+                newCard = this.createCardElement(null, true);
+            } else {
+                newCard = this.createCardElement(card);
+            }
+            this.dealerCardsEl.appendChild(newCard);
+        }
         
         // Dealer score
         if (showDealerHidden || this.gamePhase === 'ended') {
@@ -541,17 +843,25 @@ class BlackjackGame {
             this.dealerScoreEl.textContent = '(' + this.getCardValue(this.dealerHand[0]) + ')';
         }
         
-        // Render player cards
+        // Render player cards incrementally
         if (this.playerHands.length === 1) {
-            this.playerHandsContainer.innerHTML = '<div id="player-cards" class="cards-container"></div>';
-            this.playerCardsEl = document.getElementById('player-cards');
-            this.playerHands[0].forEach(card => {
-                this.playerCardsEl.innerHTML += this.createCardHTML(card);
-            });
+            // Ensure container exists
+            if (!this.playerCardsEl || !document.getElementById('player-cards')) {
+                this.playerHandsContainer.innerHTML = '<div id="player-cards" class="cards-container"></div>';
+                this.playerCardsEl = document.getElementById('player-cards');
+            }
+            
+            // Add only new cards
+            const currentCards = this.playerCardsEl.children.length;
+            for (let i = currentCards; i < this.playerHands[0].length; i++) {
+                const newCard = this.createCardElement(this.playerHands[0][i]);
+                this.playerCardsEl.appendChild(newCard);
+            }
+            
             this.playerScoreEl.textContent = this.playerHands[0].length > 0 ? 
                 '(' + this.calculateHandValue(this.playerHands[0]) + ')' : '';
         } else {
-            // Multiple hands (after split)
+            // Multiple hands (after split) - need full rebuild for active state changes
             this.playerHandsContainer.innerHTML = '<div class="split-hands-container"></div>';
             const container = this.playerHandsContainer.querySelector('.split-hands-container');
             
@@ -574,29 +884,65 @@ class BlackjackGame {
         }
     }
 
-    createCardHTML(card, hidden = false) {
+    // Create card as DOM element (avoids innerHTML refresh)
+    createCardElement(card, hidden = false) {
+        const div = document.createElement('div');
+        div.className = 'card';
+        const img = document.createElement('img');
+        
         if (hidden) {
-            return '<div class="card"><img src="cards/back.png" alt="Card Back"></div>';
+            img.src = 'playing-cards-assets/png/back.png';
+            img.alt = 'Card Back';
+        } else {
+            const suitMap = {
+                '♠': 'spades',
+                '♥': 'hearts',
+                '♦': 'diamonds',
+                '♣': 'clubs'
+            };
+            const valueMap = {
+                'A': 'ace',
+                'J': 'jack',
+                'Q': 'queen',
+                'K': 'king'
+            };
+            const valueName = valueMap[card.value] || card.value;
+            const suitName = suitMap[card.suit];
+            img.src = `playing-cards-assets/png/${valueName}_of_${suitName}.png`;
+            img.alt = `${card.value} of ${card.suit}`;
         }
         
-        // Convert card to file name format
+        div.appendChild(img);
+        return div;
+    }
+
+    createCardHTML(card, hidden = false) {
+        if (hidden) {
+            return '<div class="card"><img src="playing-cards-assets/png/back.png" alt="Card Back"></div>';
+        }
+        
+        // Convert card to file name format for playing-cards-assets
         const suitMap = {
-            '♠': 'S',
-            '♥': 'H',
-            '♦': 'D',
-            '♣': 'C'
+            '♠': 'spades',
+            '♥': 'hearts',
+            '♦': 'diamonds',
+            '♣': 'clubs'
         };
         
-        // Value: A, 2-9, 0 (for 10), J, Q, K
-        let valueCode = card.value;
-        if (card.value === '10') valueCode = '0';
+        const valueMap = {
+            'A': 'ace',
+            'J': 'jack',
+            'Q': 'queen',
+            'K': 'king'
+        };
         
-        const suitCode = suitMap[card.suit];
-        const cardCode = valueCode + suitCode;
+        const valueName = valueMap[card.value] || card.value;
+        const suitName = suitMap[card.suit];
+        const fileName = `${valueName}_of_${suitName}.png`;
         
         return `
             <div class="card">
-                <img src="cards/${cardCode}.png" alt="${card.value} of ${card.suit}">
+                <img src="playing-cards-assets/png/${fileName}" alt="${card.value} of ${card.suit}">
             </div>
         `;
     }
