@@ -694,6 +694,16 @@ header h1 {
     display: none !important;
 }
 
+/* Footer */
+.game-footer {
+    text-align: center;
+    padding: 20px;
+    margin-top: 30px;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+}
+
 /* Responsive */
 @media (max-width: 600px) {
     header h1 {
