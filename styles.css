@@ -48,17 +48,11 @@ header {
     box-shadow: 0 10px 40px rgba(0,0,0,0.3);
 }
 
-header h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.8rem;
-    background: linear-gradient(180deg, #ffd700 0%, #ff8c00 50%, #ffd700 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-shadow: none;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+.logo {
+    height: 80px;
+    width: auto;
     margin-bottom: 4px;
-    letter-spacing: 2px;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
 }
 
 .balance-display {
@@ -708,8 +702,8 @@ header h1 {
 
 /* Responsive */
 @media (max-width: 600px) {
-    header h1 {
-        font-size: 1.8rem;
+    .logo {
+        height: 60px;
     }
     
     .card {

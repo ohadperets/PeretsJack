@@ -204,6 +204,7 @@ class BlackjackGame {
         }
         this.currentBet += amount;
         this.betChips.push(amount);
+        this.playChipSound();
         this.renderBetChips();
         this.updateDisplay();
     }
@@ -213,6 +214,7 @@ class BlackjackGame {
         const amount = this.betChips[index];
         this.currentBet -= amount;
         this.betChips.splice(index, 1);
+        this.playChipSound();
         this.renderBetChips();
         this.updateDisplay();
     }
@@ -599,14 +601,17 @@ class BlackjackGame {
             if (isBlackjackWin) {
                 playerOverlayClass = 'blackjack';
                 playerText = '🎉 בלאק ג\'ק!';
+                this.playBlackjackSound();
             } else if (dealerBusted) {
                 playerOverlayClass = 'win';
                 playerText = '🔥 דילר נשרף!';
                 dealerText = 'נשרפתי!';
+                this.playWinSound();
             } else {
                 playerOverlayClass = 'win';
                 playerText = '🏆 ניצחת!';
                 dealerText = 'הפסדתי';
+                this.playWinSound();
             }
             playerAmount = '+' + netResult.toLocaleString() + ' ₪';
             
@@ -618,6 +623,7 @@ class BlackjackGame {
             playerText = '🤝 תיקו';
             playerAmount = 'הימור חזר';
             dealerText = 'תיקו';
+            this.playPushSound();
             
         } else {
             // Dealer wins
@@ -640,6 +646,7 @@ class BlackjackGame {
                 dealerText = '😎 ניצחתי!';
             }
             playerAmount = netResult.toLocaleString() + ' ₪';
+            this.playLoseSound();
         }
         
         // Show player overlay
@@ -796,6 +803,157 @@ class BlackjackGame {
         }
     }
 
+    // Sound effect for card dealing - quick whoosh
+    playCardSound() {
+        try {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const bufferSize = audioContext.sampleRate * 0.08;
+            const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+            const data = buffer.getChannelData(0);
+            
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 2);
+            }
+            
+            const source = audioContext.createBufferSource();
+            const filter = audioContext.createBiquadFilter();
+            const gainNode = audioContext.createGain();
+            
+            filter.type = 'highpass';
+            filter.frequency.value = 2000;
+            
+            source.buffer = buffer;
+            source.connect(filter);
+            filter.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
+            source.start();
+        } catch (e) {}
+    }
+
+    // Sound effect for chip click
+    playChipSound() {
+        try {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(1200, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(800, audioContext.currentTime + 0.05);
+            oscillator.type = 'square';
+            
+            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.05);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.05);
+        } catch (e) {}
+    }
+
+    // Sound effect for winning - happy ascending tones
+    playWinSound() {
+        try {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const notes = [523, 659, 784, 1047]; // C5, E5, G5, C6
+            
+            notes.forEach((freq, i) => {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = freq;
+                oscillator.type = 'sine';
+                
+                const startTime = audioContext.currentTime + i * 0.1;
+                gainNode.gain.setValueAtTime(0.2, startTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.15);
+                
+                oscillator.start(startTime);
+                oscillator.stop(startTime + 0.15);
+            });
+        } catch (e) {}
+    }
+
+    // Sound effect for blackjack - special fanfare
+    playBlackjackSound() {
+        try {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const notes = [523, 659, 784, 1047, 1319]; // C5, E5, G5, C6, E6
+            
+            notes.forEach((freq, i) => {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = freq;
+                oscillator.type = 'triangle';
+                
+                const startTime = audioContext.currentTime + i * 0.08;
+                gainNode.gain.setValueAtTime(0.25, startTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.2);
+                
+                oscillator.start(startTime);
+                oscillator.stop(startTime + 0.2);
+            });
+        } catch (e) {}
+    }
+
+    // Sound effect for losing - descending sad tone
+    playLoseSound() {
+        try {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const notes = [392, 349, 330, 294]; // G4, F4, E4, D4
+            
+            notes.forEach((freq, i) => {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = freq;
+                oscillator.type = 'sine';
+                
+                const startTime = audioContext.currentTime + i * 0.15;
+                gainNode.gain.setValueAtTime(0.15, startTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.2);
+                
+                oscillator.start(startTime);
+                oscillator.stop(startTime + 0.2);
+            });
+        } catch (e) {}
+    }
+
+    // Sound effect for push/tie
+    playPushSound() {
+        try {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
+            gainNode.gain.setValueAtTime(0.15, audioContext.currentTime + 0.1);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.3);
+        } catch (e) {}
+    }
+
     // Update Action Buttons
     updateActionButtons() {
         const hand = this.playerHands[this.currentHandIndex];
@@ -834,6 +992,7 @@ class BlackjackGame {
                 newCard = this.createCardElement(card);
             }
             this.dealerCardsEl.appendChild(newCard);
+            this.playCardSound();
         }
         
         // Dealer score
@@ -856,6 +1015,7 @@ class BlackjackGame {
             for (let i = currentCards; i < this.playerHands[0].length; i++) {
                 const newCard = this.createCardElement(this.playerHands[0][i]);
                 this.playerCardsEl.appendChild(newCard);
+                this.playCardSound();
             }
             
             this.playerScoreEl.textContent = this.playerHands[0].length > 0 ? 
