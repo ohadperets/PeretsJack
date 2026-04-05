@@ -70,7 +70,7 @@ body::before {
 .game-container {
     max-width: 900px;
     margin: 0 auto;
-    padding: 8px;
+    padding: 4px;
     position: relative;
     z-index: 1;
 }
@@ -78,18 +78,18 @@ body::before {
 /* Header */
 header {
     text-align: center;
-    padding: 8px 15px;
+    padding: 4px 15px;
     background: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 100%);
     border-radius: 15px;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
     border: 2px solid rgba(255, 215, 0, 0.3);
     box-shadow: 0 10px 40px rgba(0,0,0,0.3);
 }
 
 .logo {
-    height: 80px;
+    height: 55px;
     width: auto;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
     filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
 }
 
@@ -114,9 +114,9 @@ header {
 .dealer-area, .player-area {
     background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.05) 100%);
     border-radius: 60px;
-    padding: 10px 20px;
-    margin: 6px 0;
-    min-height: 120px;
+    padding: 6px 20px;
+    margin: 3px 0;
+    min-height: 95px;
     border: 2px solid rgba(255,255,255,0.1);
     box-shadow: 
         inset 0 2px 10px rgba(0,0,0,0.2),
@@ -230,8 +230,8 @@ header {
 
 .dealer-area h2, .player-area h2 {
     text-align: center;
-    margin-bottom: 8px;
-    font-size: 0.8rem;
+    margin-bottom: 4px;
+    font-size: 0.75rem;
     font-weight: 400;
     text-transform: uppercase;
     letter-spacing: 2px;
@@ -241,15 +241,15 @@ header {
 .cards-container {
     display: flex;
     justify-content: center;
-    min-height: 100px;
+    min-height: 75px;
     perspective: 1000px;
     align-items: center;
 }
 
 /* Playing Cards */
 .card {
-    width: 70px;
-    height: 98px;
+    width: 55px;
+    height: 77px;
     border-radius: 6px;
     background: white;
     box-shadow: 
@@ -352,8 +352,8 @@ header {
 .strategy-tip {
     background: linear-gradient(135deg, #4f46e5, #7c3aed);
     border-radius: 8px;
-    padding: 8px 12px;
-    margin: 6px 0;
+    padding: 5px 12px;
+    margin: 3px 0;
     animation: slideIn 0.3s ease;
 }
 
@@ -400,32 +400,32 @@ header {
 .bet-chips-display {
     display: flex;
     justify-content: center;
-    gap: 5px;
-    margin: 5px 0;
-    min-height: 35px;
+    gap: 4px;
+    margin: 3px 0;
+    min-height: 28px;
     flex-wrap: wrap;
     align-items: center;
 }
 
 .bet-chip {
-    width: 35px;
-    height: 35px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     border: 2px dashed white;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: bold;
-    font-size: 0.7rem;
+    font-size: 0.6rem;
     cursor: pointer;
     transition: all 0.2s ease;
     animation: chipDrop 0.3s ease;
 }
 
 .bet-chip.small {
-    width: 25px;
-    height: 25px;
-    font-size: 0.6rem;
+    width: 22px;
+    height: 22px;
+    font-size: 0.55rem;
     border-width: 2px;
     cursor: default;
 }
@@ -470,13 +470,13 @@ header {
 .betting-area {
     background: rgba(0, 0, 0, 0.3);
     border-radius: 10px;
-    padding: 10px;
+    padding: 6px;
     text-align: center;
 }
 
 .betting-area h3 {
-    margin-bottom: 8px;
-    font-size: 1rem;
+    margin-bottom: 4px;
+    font-size: 0.9rem;
 }
 
 #current-bet {
@@ -487,14 +487,14 @@ header {
 .chips-container {
     display: flex;
     justify-content: center;
-    gap: 8px;
-    margin-bottom: 10px;
+    gap: 6px;
+    margin-bottom: 6px;
     flex-wrap: wrap;
 }
 
 .chip {
-    width: 50px;
-    height: 50px;
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
     border: 3px dashed white;
     font-weight: bold;
@@ -541,8 +541,8 @@ header {
 
 /* Buttons */
 .btn {
-    padding: 8px 16px;
-    font-size: 0.9rem;
+    padding: 6px 14px;
+    font-size: 0.85rem;
     font-weight: bold;
     border: none;
     border-radius: 6px;
@@ -589,12 +589,12 @@ header {
 .action-buttons {
     display: flex;
     justify-content: center;
-    gap: 6px;
+    gap: 5px;
     flex-wrap: wrap;
-    padding: 8px;
+    padding: 5px;
     background: rgba(0, 0, 0, 0.2);
     border-radius: 10px;
-    margin: 6px 0;
+    margin: 3px 0;
 }
 
 /* New Game Area */
@@ -677,12 +677,12 @@ header {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    margin: 6px auto;
-    padding: 6px 15px;
+    gap: 8px;
+    margin: 3px auto;
+    padding: 4px 12px;
     background: rgba(0, 0, 0, 0.6);
     border-radius: 20px;
-    max-width: 250px;
+    max-width: 220px;
 }
 
 .timer-bar {
@@ -731,23 +731,23 @@ header {
 /* Footer */
 .game-footer {
     text-align: center;
-    padding: 8px;
-    margin-top: 10px;
+    padding: 3px;
+    margin-top: 3px;
     color: rgba(255, 255, 255, 0.5);
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     letter-spacing: 1px;
 }
 
 /* Responsive */
 @media (max-width: 600px) {
     .logo {
-        height: 60px;
+        height: 45px;
     }
     
     .card {
-        width: 60px;
-        height: 90px;
-        font-size: 1rem;
+        width: 50px;
+        height: 70px;
+        font-size: 0.9rem;
     }
     
     .card-center {
